@@ -1,6 +1,5 @@
 $('#choose_pic').click(function(){
 	$('#choose_pic_pop').fadeIn("fast");
-	$('#random_pic').css({"margin-left": "352px"});
 });
 
 $('body').click(function(evt){

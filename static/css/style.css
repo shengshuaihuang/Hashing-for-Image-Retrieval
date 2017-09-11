@@ -188,7 +188,7 @@ a:focus {
 
 .form_btn_top{
 	display: inline-block;
-	margin-left: 20px;
+	margin: 0 20px;
 }
 
 
@@ -211,15 +211,15 @@ a:focus {
 	z-index: 10005;
 }
 
-.nav-btn {
-	padding-top: 7px;
+.nav_btn {
+	padding-top: 20px;
 }
 
 #choose_pic_pop {
 	width: 420px;
 	height: 220px;
-	margin-left: 386px; 
 	margin-top: 20px;
+	margin-left: 20.5%;
 	position: absolute;
 	background: white;
 	border: dashed 2px rgb(111,165,211);
@@ -229,7 +229,7 @@ a:focus {
 
 #pic_pop_holder {
 	width: 420px;
-	height: 190px;
+	height: 220px;
 }
 
 #pic_pop_words {
