@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+
+{% block content %}
+		<section id="homepage_content">
+			<div class="container">
+				<div class="row text-center">
+					<h1>相似图像检索系统</h1>
+				</div>
+
+				<div class="margin30">
+					<div class="row text-center">
+						<h2>系统特性</h2>
+						<hr class="col-lg-6 col-lg-offset-3">
+					</div>
+					<div class="row text-center">
+						<p class="col-lg-6 col-lg-offset-3">
+							本系统根据人工智能技术，结合深度学习及哈希学习，对SUN397数据集（397类，共108754张图片）进行训练，并开发成web应用，实现对图片多种模式下的相似性检索。本系统具有使用方便，检索效率高，占用内存小等特点。
+						</p>
+					</div>
+
+				</div>
+
+				<div class="margin30">
+					<div class="row text-center">
+						<h2>运行模式</h2>
+						<hr class="col-lg-6 col-lg-offset-3">
+					</div>
+					<div class="row text-center">
+						<div class="margin15"> 
+							<h3>两种检索模式</h3>
+							<p><a id="choose_mode" class="mode">选取图片</a>：用户可以通过上传指定的图片进行相似性检索</p>
+							<p><a id="random_mode" class="mode" href="/random">随机图片</a>：随机显示图片，通过点击图片进行相似性检索</p>
+						</div>
+
+						<div class="margin15"> 
+							<h3>检索结果处理</h3>
+							<p>返回结果至多显示20或30幅图像(两种模式下)</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			
+		</section>
+{% endblock %}
+
+	{% block script%}
+	<script type="text/javascript">
+		$(".search").click(function() {
+			var hashcode = $(this).attr("code");
+			$("#hashcode").val(hashcode);
+			$("#form_top_random").submit();
+		});
+
+		$("#choose_mode").click(function(){
+			$("#choose_pic").click();
+		});
+
+		</script>
+	{% endblock %}

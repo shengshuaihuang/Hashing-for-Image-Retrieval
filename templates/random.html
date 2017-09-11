@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block title %}Result{% endblock %}
+
+{% block content %}
+	<section id="random_list">
+		<div class="container">
+			<div class="row">
+			<ul>
+				{% for path, code in result_path.items() %}
+					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static{{path}})">
+						<div class="zoom_search_holder">
+							<a class="thumb_a">
+								<img class="full" src=/static{{path}} id="query_img" style="display: none;">
+								Zoom Up
+							</a>
+							<a code = "{{ code }}" class="search">Retrieved</a>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+			</div>
+		</div>
+	</section>
+
+	<form action = "/random" method = "POST" id="form_top_random">
+		<input type = "text" name = "hashcode" id="hashcode" />
+	</form>
+
+	<div id="fullback"></div>
+	<div class="zoom_icon">
+		<a id="zoom_close"></a>
+		<a id="zoom_next"></a>
+		<a id="zoom_before"></a>
+	</div>
+
+	<div class="zoom_carrousel">
+		<span class="zoom_msg"></span>
+		<img class="zoom_img" src="">
+	</div>
+
+{% endblock %}
+
+{% block script%}
+	<script type="text/javascript">
+		$(".search").click(function() {
+			var hashcode = $(this).attr("code");
+			$("#hashcode").val(hashcode);
+			$("#form_top_random").submit();
+		})
+
+		$(".thumb").hover(function() {
+			var holder = $(this).find("div");
+			holder.fadeIn("fast");
+		},function() {
+			var holder = $(this).find("div");
+			holder.fadeOut("fast");
+		});
+
+		$(document).ready(function(){
+			var thumb = $(".thumb_a");
+			zoom_function(thumb);
+		});
+	</script>
+{% endblock %}
