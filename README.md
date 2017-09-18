@@ -2,8 +2,8 @@
 
 Implement of hashing methods for image retrieval in Python and this version use the DPLM method:
 ```
-    Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
-    IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.
+    [Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
+    IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359)
 ```
 In further version, I will add more methods, especially end-to-end framework methods. If you have any question, you can ask me through Issues. 
 
@@ -20,14 +20,14 @@ In further version, I will add more methods, especially end-to-end framework met
 ```
 
 ## Dataset and deep feature
-I extract the SUN397 dataset VGG16's fc7' feature via deep learning framework Caffe. You can click [here](http://groups.csail.mit.edu/vision/SUN/) where offer details about SUN397 dataset and download [link](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz). The VGG16 pre-trained model can be download from [here](https://gist.github.com/ksimonyan/211839e770f7b538e2d8). 
+I extract the SUN397 dataset VGG16's 'fc7' feature via deep learning framework Caffe. You can click [here](http://groups.csail.mit.edu/vision/SUN/) where offer details about SUN397 dataset and download [link](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz). The VGG16 pre-trained model can be download from [here](https://gist.github.com/ksimonyan/211839e770f7b538e2d8). 
 [comment]:The raw features can be download from [here]() and code is xxx
 
 ## Hashing binary code
-After some pre-process(center and normlize), 4096-d feature transformed into 128-bit hashing binary code by using hashing method. The model can be download from [here]().
+After some pre-process(center and normlize), 4096-d feature be transformed into 128-bit hashing binary code by using hashing method. The model can be download from [here]().
 
 ## <span id="database">Database</span>
-The hashing binary code are stored in the database with mysql. The database is named irs_sun397.sql and the table img construction is bellow: 
+The hashing binary code are stored in the database with mysql. The database is named irs_sun397.sql and the table 'img' construction is bellow: 
 
 | Field  |      Type    | Null  | Key | Default |      Extra     |
 | ------ |:-------------| -----:| --- |:-------:|:--------------:|
