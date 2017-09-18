@@ -16,12 +16,11 @@ import caffe
 caffe.set_mode_cpu()
 net_file = './caffe_model/VGG_ILSVRC_16_layers_deploy.prototxt'
 caffe_model = './caffe_model/VGG_ILSVRC_16_layers.caffemodel'
-mean_file = caffe_root + 'python/caffe/imagenet/ilsvrc_2012_mean.npy'
 net = caffe.Net(net_file, caffe_model, caffe.TEST)
 
 transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
 transformer.set_transpose('data', (2, 0, 1))
-transformer.set_mean('data', np.load(mean_file).mean(1).mean(1))
+transformer.set_mean('data', np.array([103.939, 116.779, 123.68]))
 transformer.set_raw_scale('data', 255)
 transformer.set_channel_swap('data', (2, 1, 0))
 net.blobs['data'].reshape(1, 3, 224, 224)
@@ -35,7 +34,6 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 
 @app.route('/')
 def index():
@@ -58,13 +56,16 @@ def result():
 		f = request.files['file']
 		if f and allowed_file(f.filename):
 			filename = secure_filename(f.filename)
+			filename =  filename.split('.')[0] + '_' + salt() + '.' + filename.split('.')[1]
 			save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 			f.save(save_path)
 			im = caffe.io.load_image(save_path)
 			net.blobs['data'].data[...] = transformer.preprocess('data', im)
 			output = net.forward()
-			feat = net.blobs['fc8'].data[0]
-			hashcode = sgh64_deep(feat)
+			# feat = net.blobs['fc8'].data[0] # uncomment if use SGH method
+			feat = net.blobs['fc7'].data[0]
+			hashcode = dplm128(feat)
+			print(save_path,hashcode)
 			result_path = hashrank(hashcode, 'Query')
 			return render_template('result.html', result_path = result_path, query_path = filename)
 
