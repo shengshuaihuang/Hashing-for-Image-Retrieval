@@ -1,9 +1,9 @@
 # Hashing for Image Retrieval
 
-Implement of hashing methods for image retrieval in Python and this version use the DPLM method:
+Implement of hashing methods for image retrieval in Python and this version use the [DPLM method](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359):
 ```
-    [Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
-    IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359)
+    Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
+    IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.
 ```
 In further version, I will add more methods, especially end-to-end framework methods. If you have any question, you can ask me through Issues. 
 
