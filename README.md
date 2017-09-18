@@ -14,6 +14,7 @@ In further version, I will add more methods, especially end-to-end framework met
 3. Import the hashing binary code to your own database, the database named irs_sun397.sql is in folder fold. The details are in [Database](#database).
 4. Modify the database configuration in utils/utils.py line 99 and line 121.
 5. Download the hashing model from [here]() and place in caffe_model folder.
+6. Download the SUN397 dataset from [here]() adn place in static/media/imagebase folder.
 6. Run app.py using command, then open browser to browse http://127.0.0.1:5000.
 ```shell
     python app.py
