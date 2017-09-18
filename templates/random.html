@@ -7,10 +7,10 @@
 			<div class="row">
 			<ul>
 				{% for path, code in result_path.items() %}
-					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static{{path}})">
+					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/imagebase/{{path}})">
 						<div class="zoom_search_holder">
 							<a class="thumb_a">
-								<img class="full" src=/static{{path}} id="query_img" style="display: none;">
+								<img class="full" src=/static/media/imagebase{{path}} id="query_img" style="display: none;">
 								Zoom Up
 							</a>
 							<a code = "{{ code }}" class="search">Retrieved</a>

@@ -100,13 +100,13 @@ def hashrank(hashcode,model):
 	cur = con.cursor()
 	img_path = {}
 	if model=='Query':
-		sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=36 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC" % (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
+		sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=36 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 20" % (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
 		aa = cur.execute(sql)
 		info = cur.fetchmany(aa)
 		for i,item in enumerate(info):
 			img_path[i] = item[0]
 	elif model=='Random':
-		sql = " select path,code_1,code_2,code_3,code_4 from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=4 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC " % (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
+		sql = " select path,code_1,code_2,code_3,code_4 from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=4 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 30 " % (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
 		aa = cur.execute(sql)
 		info = cur.fetchmany(aa)
 		for item in info:
