@@ -1,20 +1,12 @@
 # Hashing for Image Retrieval
 
-<<<<<<< HEAD
-Web implement of hashing methods for image retrieval in Python and [DPLM method]((http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359) was applied in this version:
-=======
-Web implement of hashing methods for image retrieval in Python and this version use the [DPLM method](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359):
->>>>>>> e3e58d62a48f718833d1cae7c9754d4b29aa3132
+Web implement of hashing methods for image retrieval in Python and [DPLM method](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359) was applied in this version:
 ```
     Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
     IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.
 ```
-<<<<<<< HEAD
-In further versions, I will add more methods, especially deep end-to-end framework methods. If you have any question, you can ask me through Issues. 
-=======
-In further version, I will add more methods, especially deep end-to-end framework methods. If you have any question, you can ask me through Issues. 
->>>>>>> e3e58d62a48f718833d1cae7c9754d4b29aa3132
 
+In further versions, I will add more methods, especially deep end-to-end framework methods. If you have any question, you can ask me through Issues. 
 
 ## Getting started
 1. Configure Caffe enviroment, you can refer to this [document](http://caffe.berkeleyvision.org/installation.html). Then replace the caffe_root to your own in app.py line 12.
@@ -22,7 +14,7 @@ In further version, I will add more methods, especially deep end-to-end framewor
 3. Import the hashing binary code to your own database, the database named irs_sun397.sql is in folder DB. The details are in [Database](#database).
 4. Modify the database configuration in utils/utils.py line 71 and line 95.
 5. Download the hashing model from [here](https://pan.baidu.com/s/1jId1Qse)(code is zqye) and place in folder caffe_model.(ONLY DPLM MODEL)
-6. Download the SUN397 dataset from [here](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz) and place in static/media/imagebase folder.
+6. Download the SUN397 dataset from [here](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz) and place in folder static/media/imagebase.
 7. After correcttly placing all files , run app.py by using command below
 ```shell
     python app.py
