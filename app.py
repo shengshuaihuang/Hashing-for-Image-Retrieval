@@ -65,7 +65,7 @@ def result():
 			# feat = net.blobs['fc8'].data[0] # uncomment if use SGH method
 			feat = net.blobs['fc7'].data[0]
 			hashcode = dplm128(feat)
-			print(save_path,hashcode)
+			# result_path = hashrank(hashcode, 'Query', source = 'database')
 			result_path = hashrank(hashcode, 'Query')
 			return render_template('result.html', result_path = result_path, query_path = filename)
 
@@ -76,10 +76,11 @@ def random():
 		hashcode = result['hashcode']
 		hashcode = hashcode.split(',')
 		hashcode = [int(hashcode[0][1:]), int(hashcode[1]),int(hashcode[2]),int(hashcode[3][:-1])]
+		# result_path = hashrank(hashcode, 'Random', source = 'database')
 		result_path = hashrank(hashcode, 'Random')
 		return render_template('random.html', result_path = result_path)
 	else:
-		result_path = getPathAndCodeInRandom(50)
+		result_path = getPathAndCodeInRandom(50, source='database')
 		return render_template('random.html', result_path = result_path)
 
 if __name__ == '__main__':

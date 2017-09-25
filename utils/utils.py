@@ -1,10 +1,11 @@
-#coding=utf-8
+# coding=utf-8
 import h5py
 import numpy as np
 import string
 import random
 import pymysql
 import scipy.io as sio
+import pickle
 
 def salt():
 	seed = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -45,7 +46,7 @@ def sqdist(p1, p2):
 
 
 def dplm128(feat):
-	h5f = h5py.File('./caffe_model/DPLM128.h5', 'r')
+	h5f = h5py.File('./hashing_model/DPLM128.h5', 'r')
 	W = np.mat(h5f['W'][:])
 	sigma = h5f['sigma'][:][0][0]
 	anchor = np.mat(h5f['anchor'][:])
@@ -66,42 +67,67 @@ def dplm128(feat):
 	byteresult = bit2byte(blist, 32)
 	return byteresult
 
+def hammingdistance(x,y):
+	return bin(x[0]^y[0]).count('1')+bin(x[1]^y[1]).count('1')+bin(x[2]^y[2]).count('1')+bin(x[3]^y[3]).count('1')
 
-def hashrank(hashcode,model):
-	con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
-	cur = con.cursor()
+
+def hashrank(hashcode,model, source='memory'):
 	img_path = {}
-	if model=='Query':
-		sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=36 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 20" 
-		data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
-		aa = cur.execute(sql, data)
-		info = cur.fetchmany(aa)
-		for i,item in enumerate(info):
-			img_path[i] = item[0]
-	elif model=='Random':
-		sql = " select path,code_1,code_2,code_3,code_4 from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=4 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 30 "
-		data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
+	if source=='database':
+		con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
+		cur = con.cursor()
+		if model=='Query':
+			sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=36 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 20" 
+			data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
+			aa = cur.execute(sql, data)
+			info = cur.fetchmany(aa)
+			for i,item in enumerate(info):
+				img_path[i] = item[0]
+		elif model=='Random':
+			sql = " select path,code_1,code_2,code_3,code_4 from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=4 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT 30 "
+			data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3])
+			aa = cur.execute(sql, data)
+			info = cur.fetchmany(aa)
+			for item in info:
+				img_path[item[0]] = [item[1], item[2],item[3],item[4]]
+		cur.close()
+		con.commit()
+		con.close()
+	elif source=='memory':
+		f1 = open('./hashing_model/DPLM128Code.pkl', 'rb')
+		f2 = open('./hashing_model/DPLM128Path.pkl', 'rb')
+		codebase = pickle.load(f1)
+		pathbase = pickle.load(f2)
+		f1.close()
+		f2.close()
+		if model=='Query':
+			for i in codebase:
+				if hammingdistance(hashcode,codebase[i]) <= 36:
+					img_path[i] = pathbase[i]
+				if len(img_path)==20:
+					break
+		elif model=='Random':
+			for i in codebase:
+				if hammingdistance(hashcode,codebase[i]) <= 4:
+					img_path[pathbase[i]] = [codebase[i][0],codebase[i][1],codebase[i][2],codebase[i][3]]
+				if len(img_path)==30:
+					break
+	return img_path
+
+def getPathAndCodeInRandom(number, source='memory'):
+	img_path = {}
+	if source=='database':
+		con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
+		cur = con.cursor()
+		sql = "select path,code_1,code_2,code_3,code_4 from img order by rand() LIMIT %s" 
+		data = (number)
 		aa = cur.execute(sql, data)
 		info = cur.fetchmany(aa)
 		for item in info:
 			img_path[item[0]] = [item[1], item[2],item[3],item[4]]
-	cur.close()
-	con.commit()
-	con.close()
-	return img_path
-
-
-def getPathAndCodeInRandom(number):
-	con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
-	cur = con.cursor()
-	sql = "select path,code_1,code_2,code_3,code_4 from img order by rand() LIMIT %s" 
-	data = (number)
-	aa = cur.execute(sql, data)
-	info = cur.fetchmany(aa)
-	img_path = {}
-	for item in info:
-		img_path[item[0]] = [item[1], item[2],item[3],item[4]]
-	cur.close()
-	con.commit()
-	con.close()
+		cur.close()
+		con.commit()
+		con.close()
+	elif source=='memory':
+		pass
 	return img_path
