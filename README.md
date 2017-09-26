@@ -31,7 +31,7 @@ The SUN397 dataset VGG16's 'fc7' feature extracted by using deep learning framew
 ## Hashing binary code
 After some pre-processing(center and normlize), 4096-d feature was transformed into 128-bit hashing binary code by using hashing method. 
 
-##<span id="pklfile">PKL file</span>
+## <span id="pklfile">PKL file</span>
 There are two pkl files named DPLM128Path.pkl, DPLM128Code.pkl and stored image path and corresponding hashing binary codes. There are all stored in list, but path's element is str and hashing binary code is tuple.
 
 ## <span id="database">Database</span>
