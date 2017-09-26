@@ -6,16 +6,18 @@
 		<div class="container">
 			<div class="row">
 			<ul>
-				{% for path, code in result_path.items() %}
-					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/imagebase/{{path}})">
-						<div class="zoom_search_holder">
-							<a class="thumb_a">
-								<img class="full" src=/static/media/imagebase{{path}} id="query_img" style="display: none;">
-								Zoom Up
-							</a>
-							<a code = "{{ code }}" class="search">Search</a>
-						</div>
-					</li>
+				{% for index, item in result_path.items() %}
+					{% for path, code in item.items() %}
+						<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/imagebase/{{path}})">
+							<div class="zoom_search_holder">
+								<a class="thumb_a">
+									<img class="full" src=/static/media/imagebase{{path}} id="query_img" style="display: none;">
+									Zoom Up
+								</a>
+								<a code = "{{ code }}" class="search">Search</a>
+							</div>
+						</li>
+					{% endfor %}
 				{% endfor %}
 			</ul>
 			</div>

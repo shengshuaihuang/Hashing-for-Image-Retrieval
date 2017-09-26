@@ -35,20 +35,20 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @app.route('/')
 def index():
 	return render_template('index.html')
+
 
 @app.route('/layout')
 def layout():
 	return render_template('layout.html')
 
-
-
-
-def allowed_file(filename):
-	return '.' in filename and \
-		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/result', methods = ['POST', 'GET'])
 def result():
@@ -62,12 +62,11 @@ def result():
 			im = caffe.io.load_image(save_path)
 			net.blobs['data'].data[...] = transformer.preprocess('data', im)
 			output = net.forward()
-			# feat = net.blobs['fc8'].data[0] # uncomment if use SGH method
 			feat = net.blobs['fc7'].data[0]
 			hashcode = dplm128(feat)
-			# result_path = hashrank(hashcode, 'Query', source = 'database')
 			result_path = hashrank(hashcode, 'Query')
 			return render_template('result.html', result_path = result_path, query_path = filename)
+
 
 @app.route('/random', methods = ['POST', 'GET'])
 def random():
@@ -76,12 +75,12 @@ def random():
 		hashcode = result['hashcode']
 		hashcode = hashcode.split(',')
 		hashcode = [int(hashcode[0][1:]), int(hashcode[1]),int(hashcode[2]),int(hashcode[3][:-1])]
-		# result_path = hashrank(hashcode, 'Random', source = 'database')
 		result_path = hashrank(hashcode, 'Random')
 		return render_template('random.html', result_path = result_path)
 	else:
-		result_path = getPathAndCodeInRandom(50, source='database')
+		result_path = getPathAndCodeInRandom(50)
 		return render_template('random.html', result_path = result_path)
+
 
 if __name__ == '__main__':
 	app.run(debug=True)
