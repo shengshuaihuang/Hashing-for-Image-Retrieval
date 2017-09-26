@@ -1,25 +1,27 @@
 # Hashing for Image Retrieval
 
-Web implement of hashing methods for image retrieval in Python and [DPLM method](http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359) was applied in this version:
+Web implement of hashing methods for image retrieval in Python and [DPLM method]((http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7574359) was applied in this version:
 ```
     Shen F, Zhou X, Yang Y, et al. A fast optimization method for general binary code learning  
     IEEE Transactions on Image Processing, 2016, 25(12): 5610-5621.
 ```
-
 In further versions, I will add more methods, especially deep end-to-end framework methods. If you have any question, you can ask me through Issues. 
+
 
 ## Getting started
 1. Configure Caffe enviroment, you can refer to this [document](http://caffe.berkeleyvision.org/installation.html). Then replace the caffe_root to your own in app.py line 12.
 2. Configure MySql enviroment.
-3. Import the hashing binary code to your own database, the database named irs_sun397.sql is in folder DB. The details are in [Database](#database).
-4. Modify the database configuration in utils/utils.py line 71 and line 95.
+3. Import the database named irs_sun397.sql in folder DB to your own database or directly use hash binary code and corresponding path saved in pkl file in folder hashing_model, The details are in [Database](#database) and [PKL file](#pklfile).
+4. Modify the database configuration in utils/utils.py line 87 and line 160.(ignore it if you use pkl file.)
 5. Download the hashing model from [here](https://pan.baidu.com/s/1jId1Qse)(code is zqye) and place in folder caffe_model.(ONLY DPLM MODEL)
-6. Download the SUN397 dataset from [here](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz) and place in folder static/media/imagebase.
+6. Download the SUN397 dataset from [here](http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz) and place in static/media/imagebase folder.
 7. After correcttly placing all files , run app.py by using command below
 ```shell
     python app.py
 ```
 then browse http://127.0.0.1:5000.
+
+Remark: database is necessary to large-scale image dataset but pkl file is convenient to experiment.
 
 
 ## Dataset and deep feature
@@ -28,6 +30,9 @@ The SUN397 dataset VGG16's 'fc7' feature extracted by using deep learning framew
 
 ## Hashing binary code
 After some pre-processing(center and normlize), 4096-d feature was transformed into 128-bit hashing binary code by using hashing method. 
+
+##<span id="pklfile">PKL file</span>
+There are two pkl files named DPLM128Path.pkl, DPLM128Code.pkl and stored image path and corresponding hashing binary codes. There are all stored in list, but path's element is str and hashing binary code is tuple.
 
 ## <span id="database">Database</span>
 The hashing binary code are stored in the database with mysql. The database is named irs_sun397.sql and the table 'img' construction is bellow: 
