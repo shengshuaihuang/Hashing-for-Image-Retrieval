@@ -9,8 +9,8 @@
 			</div>
 			<div class="row">
 				<ul>
-					<li class="thumb" style="background-image: url(/static/media/upload/{{ query_path }})">
-						<img class="full" src="/static/media/upload/{{ query_path }}" id="query_img" style="display: none;">
+					<li class="thumb" style="background-image: url({{ query_path }})">
+						<img class="full" src="{{ query_path }}" id="query_img" style="display: none;">
 					</li>
 				</ul>
 				
@@ -32,8 +32,8 @@
 			<div class="row">
 			<ul>
 				{% for key, item in result_path.items() %}
-					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/imagebase{{item}})">
-						<img class="full" src=/static/media/imagebase{{item}} id="query_img" style="display: none;">
+					<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/dataset{{item}})">
+						<img class="full" src=/static/media/dataset{{item}} id="query_img" style="display: none;">
 					</li>
 				{% endfor %}
 			</ul>

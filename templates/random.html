@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Result{% endblock %}
+{% block title %}Random{% endblock %}
 
 {% block content %}
 	<section id="random_list">
@@ -8,13 +8,13 @@
 			<ul>
 				{% for index, item in result_path.items() %}
 					{% for path, code in item.items() %}
-						<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/imagebase/{{path}})">
+						<li class="thumb col-lg-3 col-md-4 col-sm-6" style="background-image: url(/static/media/dataset/{{path}})">
 							<div class="zoom_search_holder">
 								<a class="thumb_a">
-									<img class="full" src=/static/media/imagebase{{path}} id="query_img" style="display: none;">
+									<img class="full" src=/static/media/dataset{{path}} id="query_img" style="display: none;">
 									Zoom Up
 								</a>
-								<a code = "{{ code }}" class="search">Search</a>
+								<a code = "{{ code }}" path = "{{ path }}" class="search">Search</a>
 							</div>
 						</li>
 					{% endfor %}
@@ -24,8 +24,9 @@
 		</div>
 	</section>
 
-	<form action = "/random" method = "POST" id="form_top_random">
+	<form action = "/result" method = "get" id="form_top_random">
 		<input type = "text" name = "hashcode" id="hashcode" />
+		<input type = "text" name = "path" id="path" />
 	</form>
 
 	<div id="fullback"></div>
@@ -46,7 +47,9 @@
 	<script type="text/javascript">
 		$(".search").click(function() {
 			var hashcode = $(this).attr("code");
+			var path = $(this).attr("path");
 			$("#hashcode").val(hashcode);
+			$("#path").val(path);
 			$("#form_top_random").submit();
 		})
 

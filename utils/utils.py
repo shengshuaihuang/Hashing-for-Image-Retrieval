@@ -6,10 +6,7 @@ import random
 import pymysql
 import scipy.io as sio
 import pickle
-
-dplm_model_path = './hashing_model/DPLM128.h5'
-dplm_code_path = './hashing_model/DPLM128Code.pkl'
-dplm_path_path = './hashing_model/DPLM128Path.pkl'
+from utils.variables import *
 
 
 def salt():
@@ -51,7 +48,7 @@ def sqdist(p1, p2):
 
 
 def dplm128(feat):
-	h5f = h5py.File(dplm_model_path, 'r')
+	h5f = h5py.File(model_path, 'r')
 	W = np.mat(h5f['W'][:])
 	sigma = h5f['sigma'][:][0][0]
 	anchor = np.mat(h5f['anchor'][:])
@@ -71,93 +68,67 @@ def dplm128(feat):
 	byteresult = bit2byte(blist, 32)
 	return byteresult
 
+
 def hammingdistance(x,y):
 	return bin(x[0]^y[0]).count('1')+bin(x[1]^y[1]).count('1')+bin(x[2]^y[2]).count('1')+bin(x[3]^y[3]).count('1')
 
 
-def hashrank(hashcode,model,radus=2,source='memory'):
+def hashrank(hashcode,model,source):
 	img_path = {}
 	img_path_cache = {}
 	img_path_rank = []
-	query_limit = 20
-	random_limit = 30
-
+	if model == 'Query':
+		radus = query_radus
+	elif model == 'Random':
+		radus = random_radus
 # data from database
 	if source=='database':
-		con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
+		con = pymysql.connect(host=getConfig('database','dbhost'), user=getConfig('database','dbuser'), passwd=getConfig('database','dbpassword'), db=getConfig('database','dbname'))
 		cur = con.cursor()
-		if model=='Query':
-			sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=36 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT %s" 
-			data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3], query_limit)
-			aa = cur.execute(sql, data)
-			info = cur.fetchmany(aa)
-			for i,item in enumerate(info):
-				img_path[i] = item[0] # { id:path }
-		elif model=='Random':
-			sql = " select path,code_1,code_2,code_3,code_4 from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=4 ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT %s "
-			data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], hashcode[0], hashcode[1], hashcode[2], hashcode[3], random_limit)
-			aa = cur.execute(sql, data)
-			info = cur.fetchmany(aa)
-			for i, item in enumerate(info):
-				img_path[i] = {item[0].rstrip():[item[1], item[2],item[3],item[4]]}  # { id: { path:[code1, code2, code3, code4] } }
+		sql = " select path from img WHERE hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4)<=%s ORDER BY hammingdistance(%s,%s,%s,%s,code_1,code_2,code_3,code_4) ASC, id DESC LIMIT %s" 
+		data = (hashcode[0], hashcode[1], hashcode[2], hashcode[3], radus, hashcode[0], hashcode[1], hashcode[2], hashcode[3], query_limit)
+		aa = cur.execute(sql, data)
+		info = cur.fetchmany(aa)
+		for i,item in enumerate(info):
+			img_path[i] = item[0] # { id:path }
 		cur.close()
 		con.commit()
 		con.close()
 
 # data from memory
 	elif source=='memory':
-		f1 = open(dplm_code_path, 'rb')
-		f2 = open(dplm_path_path, 'rb')
+		f1 = open(code_path, 'rb')
+		f2 = open(imgpath_path, 'rb')
 		codebase = pickle.load(f1)
 		pathbase = pickle.load(f2)
 		f1.close()
 		f2.close()
 
-		if model=='Random':
-			for i in codebase:
-				dist = hammingdistance(hashcode,codebase[i])
-				#img_path_cache { hammingdistance:{path:[code1, code2, code3, code4]} }
-				if dist <= 4:
-					if dist in img_path_cache.keys():
-						img_path_cache[dist].append({ pathbase[i] : [ codebase[i][0],codebase[i][1],codebase[i][2],codebase[i][3] ] })
-					else:
-						img_path_cache[dist] = []
-						img_path_cache[dist].append({ pathbase[i] : [ codebase[i][0],codebase[i][1],codebase[i][2],codebase[i][3] ] })
-			# img_path {id:{path:[code1, code2, code3, code4]}}
-			for value in iter(img_path_cache.values()):
-				img_path_rank.extend(value)
-				if len(img_path_rank)>random_limit:
-					for i,item in enumerate(img_path_rank[:query_limit]):
-						img_path[i] = item
+		for i in codebase:
+			dist = hammingdistance(hashcode,codebase[i])
+			#img_path_cache {hammingdistance:[path]}
+			if dist <= radus:
+				if dist in img_path_cache.keys():
+					img_path_cache[dist].append(pathbase[i])
 				else:
-					for i,item in enumerate(img_path_rank):
-						img_path[i] = item
-
-		elif model=="Query":
-			for i in codebase:
-				dist = hammingdistance(hashcode,codebase[i])
-				#img_path_cache {hammingdistance:[path]}
-				if dist <= 36:
-					if dist in img_path_cache.keys():
-						img_path_cache[dist].append(pathbase[i])
-					else:
-						img_path_cache[dist] = []
-						img_path_cache[dist].append(pathbase[i])
-			# img_path {id:path}
-			for value in iter(img_path_cache.values()):
-				img_path_rank.extend(value)
-				if len(img_path_rank)>query_limit:
-					for i,item in enumerate(img_path_rank[:query_limit]):
-						img_path[i] = item
-				else:
-					for i,item in enumerate(img_path_rank):
-						img_path[i] = item
+					img_path_cache[dist] = []
+					img_path_cache[dist].append(pathbase[i])
+		# img_path {id:path}
+		for value in iter(img_path_cache.values()):
+			img_path_rank.extend(value)
+			if len(img_path_rank)>query_limit:
+				for i,item in enumerate(img_path_rank[:query_limit]):
+					img_path[i] = item
+			else:
+				for i,item in enumerate(img_path_rank):
+					img_path[i] = item
 	return img_path
+
 
 def getPathAndCodeInRandom(number, source='memory'):
 	img_path = {}
 	if source=='database':
-		con = pymysql.connect(host="127.0.0.1", user="root", passwd="hss123456", db="irs_dplm")
+		con = pymysql.connect(host=getConfig('database','dbhost'), user=getConfig('database','dbuser'), passwd=getConfig('database','dbpassword'), db=getConfig('database','dbname'))
 		cur = con.cursor()
 		sql = "select path,code_1,code_2,code_3,code_4 from img order by rand() LIMIT %s" 
 		data = (number)
@@ -169,8 +140,8 @@ def getPathAndCodeInRandom(number, source='memory'):
 		con.commit()
 		con.close()
 	elif source=='memory':
-		f1 = open(dplm_code_path, 'rb')
-		f2 = open(dplm_path_path, 'rb')
+		f1 = open(code_path, 'rb')
+		f2 = open(imgpath_path, 'rb')
 		codebase = pickle.load(f1)
 		pathbase = pickle.load(f2)
 		f1.close()
@@ -181,19 +152,3 @@ def getPathAndCodeInRandom(number, source='memory'):
 		for i,randindex in enumerate(randlist):
 			img_path[i] = {pathbase[randindex]:[ codebase[randindex][0],codebase[randindex][1],codebase[randindex][2],codebase[randindex][3] ]}
 	return img_path
-
-# import time
-# # hashcode = [2927750817, 1195056709, 404853706, 2309990425]
-
-# time1 = time.time()
-# print(getPathAndCodeInRandom(3, source='memory'))
-# time2 = time.time()
-# print(getPathAndCodeInRandom(3, source='database'))
-# time3 = time.time()
-# # hashrank(hashcode,'Random', source='memory')
-# # time4 = time.time()
-# # hashrank(hashcode,'Random', source='database')
-# # time5 = time.time()
-
-# print('memory:',time2-time1, 'database:',time3-time2)
-# # print('memory:',time4-time3, 'database:',time5-time4)
